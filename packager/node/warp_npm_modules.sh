@@ -34,13 +34,13 @@ then
   node_files="$node_files npm-shrinkwrap.json"
 fi
 
-run cp node_files $TMPDIR
+run cp $node_files $TMPDIR
 
 secure_cd $TMPDIR
 
 nvm_command "nvm use v`cat .node_version` && npm install --production"
 
-run rm node_files
+run rm $node_files
 
 automatic_update_sys_dependencies $TMPDIR
 
