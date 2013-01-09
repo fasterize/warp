@@ -31,7 +31,7 @@ echo "Installing npm modules $LOCAL_NPM_MODULES_HASH"
 
 finalize() {
   #save the file tree in a tmp folder for debug
-  find $NVM_DIR/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH > "/tmp/$LOCAL_NPM_MODULES_HASH"
+  ls -alR $NVM_DIR/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH > "/tmp/$LOCAL_NPM_MODULES_HASH"
   cp -r $NVM_DIR/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH node_modules
 }
 
