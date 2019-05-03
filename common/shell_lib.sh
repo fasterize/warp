@@ -139,14 +139,20 @@ check_warp_src() {
 download_and_install() {
   FILENAME=$1
   check_warp_src
-  if [ $WARP_SRC =~ *gitlab* ] ; then
+  if  echo $WARP_SRC | grep -q 'gitlab'
+  then
     TARGET=`tmpdir`/artifact.zip
-    curl -L --ouput $TARGET $WARP_SRC
+    if ! curl -L --output $TARGET $WARP_SRC > /dev/null ; then
+	echo "Unable to download file $WARP_SRC"
+	rm -rf `dirname $TARGET`
+	exit 87
+    fi
+    echo "File download successful"
     rm -rf /tmp/warp-unzip
     mkdir -p /tmp/warp-unzip
     unzip $TARGET -d /tmp/warp-unzip/
-    run sh /tmp/warp-unzip/*.warp
-    run rm /tmp/warp-unzip/*.warp
+    run sh /tmp/warp-unzip/warp/$FILENAME.warp
+    run rm /tmp/warp-unzip/warp/$FILENAME.warp
   else
     TARGET=`tmpdir`/toto.warp
     echo "Downloading file $WARP_SRC/$FILENAME.warp"
