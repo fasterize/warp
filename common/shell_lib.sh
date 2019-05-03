@@ -139,16 +139,26 @@ check_warp_src() {
 download_and_install() {
   FILENAME=$1
   check_warp_src
-  TARGET=`tmpdir`/toto.warp
-  echo "Downloading file $WARP_SRC/$FILENAME.warp"
-  if ! curl -f -s $WARP_SRC/$FILENAME.warp -o $TARGET > /dev/null ; then
-    echo "Unable to download file $WARP_SRC/$FILENAME.warp"
-    rm -rf `dirname $TARGET`
-    exit 87
+  if [ $WARP_SRC =~ *gitlab* ] ; then
+    TARGET=`tmpdir`/artifact.zip
+    curl -L --ouput $TARGET $WARP_SRC
+    rm -rf /tmp/warp-unzip
+    mkdir -p /tmp/warp-unzip
+    unzip $TARGET -d /tmp/warp-unzip/
+    run sh /tmp/warp-unzip/*.warp
+    run rm /tmp/warp-unzip/*.warp
+  else
+    TARGET=`tmpdir`/toto.warp
+    echo "Downloading file $WARP_SRC/$FILENAME.warp"
+    if ! curl -f -s $WARP_SRC/$FILENAME.warp -o $TARGET > /dev/null ; then
+      echo "Unable to download file $WARP_SRC/$FILENAME.warp"
+      rm -rf `dirname $TARGET`
+      exit 87
+    fi
+    echo "File download successful"
+    run sh $TARGET
+    run rm $TARGET
   fi
-  echo "File download successful"
-  run sh $TARGET
-  run rm $TARGET
 }
 
 START_DIR=`pwd`
