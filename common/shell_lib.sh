@@ -11,7 +11,7 @@ check_directory_exists() {
   if [ ! -d "$1" ]; then
     echo "Non existent directory : $1"
     exit 12
-  fi 
+  fi
 }
 
 check_mutiple_values() {
@@ -139,20 +139,25 @@ check_warp_src() {
 download_and_install() {
   FILENAME=$1
   check_warp_src
+  echo "WARP PROJECT IS : ${WARP_PROJECT}"
+  echo "CI JOB ID : ${GITLAB_CI_JOB_ID}"
   if  echo $WARP_SRC | grep -q 'gitlab'
   then
-    TARGET=`tmpdir`/artifact.zip
-    if ! curl -L --output $TARGET $WARP_SRC > /dev/null ; then
-	echo "Unable to download file $WARP_SRC"
-	rm -rf `dirname $TARGET`
-	exit 87
+    if [ -z "$GITLAB_CI_JOB_ID" ]; then
+      PROJECT_WARP_SRC=$(echo $WARP_SRC | sed -e "s/##PROJECT##/$WARP_PROJECT/g" | sed -e "s/##FILENAME##/$FILENAME/g")
+    else
+      PROJECT_WARP_SRC=$(echo $WARP_SRC_JOB | sed -e "s/##PROJECT##/$WARP_PROJECT/g" | sed -e "s/##FILENAME##/$FILENAME/g" | sed -e "s/##CI_JOB_ID##/$GITLAB_CI_JOB_ID/g")
+    fi
+    echo "PROJECT WARP SRC : ${PROJECT_WARP_SRC}"
+    TARGET=`tmpdir`/${FILENAME}.warp
+    if ! curl -L --output $TARGET $PROJECT_WARP_SRC > /dev/null ; then
+      echo "Unable to download file $WARP_SRC"
+      rm -rf `dirname $TARGET`
+      exit 87
     fi
     echo "File download successful"
-    rm -rf /tmp/warp-unzip
-    mkdir -p /tmp/warp-unzip
-    unzip $TARGET -d /tmp/warp-unzip/
-    run sh /tmp/warp-unzip/warp/$FILENAME.warp
-    run rm /tmp/warp-unzip/warp/$FILENAME.warp
+    run sh $TARGET
+    run rm $TARGET
   else
     TARGET=`tmpdir`/toto.warp
     echo "Downloading file $WARP_SRC/$FILENAME.warp"
