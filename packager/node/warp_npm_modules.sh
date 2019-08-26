@@ -22,10 +22,16 @@ exit_if_existent $WARP_EXPORT_DIR/$TARGET_NAME
 
 read_sys_dependencies
 
+TMPDIR=$(tmpdir)
+
+if [ ! -z "$WARP_ADD_EXTRA" ]; then
+  echo "Packaging $WARP_ADD_EXTRA to $TARGET_NAME"
+  run mkdir -p $TMPDIR/warp_extras
+  run cp -r $WARP_ADD_EXTRA $TMPDIR/warp_extras
+fi
+
 echo "Packaging npm modules to $TARGET_NAME"
 echo "System dependencies : $SYS_DEPENDENCIES"
-
-TMPDIR=$(tmpdir)
 
 node_files=".node_version package.json"
 
@@ -56,6 +62,16 @@ mkdir -p \${HOME}/.nvm/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH
 rm -rf \${HOME}/.nvm/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH
 mv node_modules \${HOME}/.nvm/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH
 
+STOP_SUBSCRIPT
+
+if [ ! -z "$WARP_ADD_EXTRA" ]; then
+  cat >> $TMPDIR/install <<STOP_SUBSCRIPT
+echo "Moving warp extras to \$1"
+mv warp_extras/* "\$1"
+STOP_SUBSCRIPT
+fi
+
+cat >> $TMPDIR/install <<STOP_SUBSCRIPT
 echo "Done."
 
 STOP_SUBSCRIPT
@@ -68,4 +84,3 @@ secure_cd $WARP_EXPORT_DIR
 run $WARP_HOME/warper/warp_builder.sh $TARGET_NAME $TMPDIR
 
 run rm -rf $TMPDIR
-
