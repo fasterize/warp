@@ -35,6 +35,12 @@ echo "System dependencies : $SYS_DEPENDENCIES"
 
 node_files=".node_version package.json"
 
+if [ -e "package-lock.json" ]
+then
+  node_files="$node_files package-lock.json"
+fi
+
+
 if [ -e "npm-shrinkwrap.json" ]
 then
   node_files="$node_files npm-shrinkwrap.json"
