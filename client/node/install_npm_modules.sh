@@ -32,6 +32,9 @@ echo "Installing npm modules $LOCAL_NPM_MODULES_HASH"
 finalize() {
   rm -rf node_modules
   cp -r $NVM_DIR/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH node_modules
+  if [ -d "$NVM_DIR/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH-extras" ] ; then
+    cp -r $NVM_DIR/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH-extras/* .
+  fi
 }
 
 if [ -d $NVM_DIR/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH ]; then

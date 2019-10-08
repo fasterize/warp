@@ -72,8 +72,10 @@ STOP_SUBSCRIPT
 
 if [ ! -z "$WARP_ADD_EXTRA" ]; then
   cat >> $TMPDIR/install <<STOP_SUBSCRIPT
-echo "Moving warp extras to \$1"
-mv warp_extras/* "\$1"
+echo "Moving warp extras to \${HOME}/.nvm/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH-extras"
+mkdir -p \${HOME}/.nvm/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH-extras
+mv warp_extras/* \${HOME}/.nvm/v$LOCAL_NODE_VERSION/modules/$LOCAL_NPM_MODULES_HASH-extras
+
 STOP_SUBSCRIPT
 fi
 
