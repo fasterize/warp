@@ -21,21 +21,20 @@ load_node_config() {
     fi
   fi
 
-  if [ -f package-lock.json ]; then
-    LOCAL_NPM_MODULES_HASH=`cat package-lock.json | md5sum | awk '{print $1}'`
+  if [ ! -z "$WARP_CHECKSUM_FILES" ]; then
+    LOCAL_NPM_MODULES_HASH=`find $(echo $WARP_CHECKSUM_FILES) -type f -exec md5sum {} \; | awk '{print $1}' | sort | md5sum | awk '{print $1}'`
   else
-    if [ -f npm-shrinkwrap.json ]; then
-      LOCAL_NPM_MODULES_HASH=`cat npm-shrinkwrap.json | md5sum | awk '{print $1}'`
+    if [ -f package-lock.json ]; then
+      LOCAL_NPM_MODULES_HASH=`cat package-lock.json | md5sum | awk '{print $1}'`
     else
-      if [ -f package.json ] && [ "`grep dependencies package.json`" != "" ]; then
-        LOCAL_NPM_MODULES_HASH=`cat package.json | md5sum | awk '{print $1}'`
+      if [ -f npm-shrinkwrap.json ]; then
+        LOCAL_NPM_MODULES_HASH=`cat npm-shrinkwrap.json | md5sum | awk '{print $1}'`
+      else
+        if [ -f package.json ] && [ "`grep dependencies package.json`" != "" ]; then
+          LOCAL_NPM_MODULES_HASH=`cat package.json | md5sum | awk '{print $1}'`
+        fi
       fi
     fi
-  fi
-
-  if [ ! -z "$WARP_ADD_EXTRA" ]; then
-    EXTRA_DIR_HASH=`find $WARP_ADD_EXTRA -type f -exec md5sum {} \; | awk '{print $1}' | sort | md5sum | awk '{print $1}'`
-    LOCAL_NPM_MODULES_HASH=`echo ${LOCAL_NPM_MODULES_HASH}_${EXTRA_DIR_HASH} | md5sum | awk '{print $1}'`
   fi
 }
 
