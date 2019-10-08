@@ -23,10 +23,14 @@ load_node_config() {
 
   if [ -f package-lock.json ]; then
     LOCAL_NPM_MODULES_HASH=`cat package-lock.json | md5sum | awk '{print $1}'`
-  elif [ -f npm-shrinkwrap.json ]; then
-    LOCAL_NPM_MODULES_HASH=`cat npm-shrinkwrap.json | md5sum | awk '{print $1}'`
-  elif [ -f package.json ] && [ "`grep dependencies package.json`" != "" ]; then
-    LOCAL_NPM_MODULES_HASH=`cat package.json | md5sum | awk '{print $1}'`
+  else
+    if [ -f npm-shrinkwrap.json ]; then
+      LOCAL_NPM_MODULES_HASH=`cat npm-shrinkwrap.json | md5sum | awk '{print $1}'`
+    else
+      if [ -f package.json ] && [ "`grep dependencies package.json`" != "" ]; then
+        LOCAL_NPM_MODULES_HASH=`cat package.json | md5sum | awk '{print $1}'`
+      fi
+    fi
   fi
 
   if [ ! -z "$WARP_ADD_EXTRA" ]; then
