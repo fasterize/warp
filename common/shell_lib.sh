@@ -136,9 +136,18 @@ check_warp_src() {
   WARP_SRC=`cat $HOME/.warp_src | perl -pe 's/\/$//g'`
 }
 
+check_warp_src_job() {
+  if [ ! -f $HOME/.warp_src_job ]; then
+    echo "No file \$HOME/.warp_src_job found"
+    exit 42
+  fi
+  WARP_SRC_JOB=`cat $HOME/.warp_src_job | perl -pe 's/\/$//g'`
+}
+
 download_and_install() {
   FILENAME=$1
   check_warp_src
+  check_warp_src_job
   echo "WARP PROJECT IS : ${WARP_PROJECT}"
   echo "CI JOB ID : ${GITLAB_CI_JOB_ID}"
   if  echo $WARP_SRC | grep -q 'gitlab'
@@ -151,7 +160,7 @@ download_and_install() {
     echo "PROJECT WARP SRC : ${PROJECT_WARP_SRC}"
     TARGET=`tmpdir`/${FILENAME}.warp
     if ! curl -L --output $TARGET "$PROJECT_WARP_SRC" > /dev/null ; then
-      echo "Unable to download file $WARP_SRC"
+      echo "Unable to download file $PROJECT_WARP_SRC"
       rm -rf `dirname $TARGET`
       exit 87
     fi
