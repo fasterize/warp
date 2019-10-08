@@ -150,7 +150,7 @@ download_and_install() {
     fi
     echo "PROJECT WARP SRC : ${PROJECT_WARP_SRC}"
     TARGET=`tmpdir`/${FILENAME}.warp
-    if ! curl -L --output $TARGET $PROJECT_WARP_SRC > /dev/null ; then
+    if ! curl -L --output $TARGET "$PROJECT_WARP_SRC" > /dev/null ; then
       echo "Unable to download file $WARP_SRC"
       rm -rf `dirname $TARGET`
       exit 87
