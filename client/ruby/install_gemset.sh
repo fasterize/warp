@@ -28,7 +28,7 @@ finalize() {
   if [ -d $RBENV_DIR/versions/$LOCAL_RUBY_VERSION/gemsets/$LOCAL_GEMSET_HASH/.bundle ]; then
     cp -r $RBENV_DIR/versions/$LOCAL_RUBY_VERSION/gemsets/$LOCAL_GEMSET_HASH/.bundle .bundle
   fi
-  find $RBENV_DIR/versions/*/gemsets/*/ -maxdepth 1 -type d -mtime +30 -exec rm -rf {} \;
+  find $RBENV_DIR/versions/*/gemsets/*/ -maxdepth 1 -type d -prune -mtime +30 -exec rm -rf {} \;
   echo $LOCAL_GEMSET_HASH > .rbenv-gemsets
   echo $LOCAL_GEMSET > .warped
 }
